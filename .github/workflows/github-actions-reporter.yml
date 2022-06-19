@@ -4,7 +4,7 @@ name: FakeRESTApi Newman runner + HTML reporter
 on: [push, pull_request]
 
 jobs:
-  Running-API-Testing:
+  Running-API-Testing-and-reporting-using-newman-and-HTMLReporter:
     runs-on: ubuntu-latest
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
