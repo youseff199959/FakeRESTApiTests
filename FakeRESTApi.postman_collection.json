@@ -1,0 +1,502 @@
+{
+	"info": {
+		"_postman_id": "b0ba552c-34f5-4a7a-95d1-9d06f62aa6ff",
+		"name": "FakeRESTApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19364833"
+	},
+	"item": [
+		{
+			"name": "Activities",
+			"item": [
+				{
+					"name": "Get all activities",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//A function that choose an inter randomally \r",
+									"function getRandomInt(max) {\r",
+									"    return Math.floor(Math.random() * max) + 1;\r",
+									"}\r",
+									"\r",
+									"//Condition to stop running the tests if the response isn't valid \r",
+									"if (pm.collectionVariables.get(\"ValidResponse\")) {\r",
+									"\r",
+									"    //Get the resononse from the body and then declare a counter to know the response number \r",
+									"    var body = pm.response.json();\r",
+									"    var counter = 0;\r",
+									"\r",
+									"    //Check if the returned body is array\r",
+									"    pm.test(\"The returned body is array\", function () {\r",
+									"        pm.expect(body).to.be.an(\"Array\")\r",
+									"    })\r",
+									"\r",
+									"    //A for each loop that loop on all the array to get it's items\r",
+									"    body.forEach(body => {\r",
+									"        counter++;\r",
+									"        //Check that the ID returned is a number  \r",
+									"        pm.test(\"Id for response \" + counter + \" returned is a number\", function () {\r",
+									"            pm.expect(body.id).to.be.a('Number');\r",
+									"        })\r",
+									"\r",
+									"        //Check the value of the ID \r",
+									"        pm.test(\"Id for response \" + counter + \" equal \" + counter, function () {\r",
+									"            pm.expect(body.id).to.equal(counter);\r",
+									"        })\r",
+									"\r",
+									"        //Check that the title return a string\r",
+									"        pm.test(\"title for response \" + counter + \" is returned and a string\", function () {\r",
+									"            pm.expect(body.title).to.be.a(\"string\");\r",
+									"        })\r",
+									"\r",
+									"        //Check that the complete parameter returned boolean\r",
+									"        pm.test(\"completed for response \" + counter + \" is returned and a boolean\", function () {\r",
+									"            pm.expect(body.completed).to.be.a('boolean');\r",
+									"        })\r",
+									"\r",
+									"        //Check that the dueDate retruned contain some of time format like +00:00 and T \r",
+									"        pm.test(\"dueDate for response \" + counter + \" is returned and a date\", function () {\r",
+									"            pm.expect(body.dueDate).to.include('+00:00');\r",
+									"            pm.expect(body.dueDate).to.include(\"T\");\r",
+									"        })\r",
+									"    })\r",
+									"\r",
+									"    //Call the random number function to prepeare them for the next request\r",
+									"    pm.collectionVariables.set(\"Id\", getRandomInt(counter - 1))\r",
+									"    pm.collectionVariables.set(\"IdPost\", getRandomInt(counter + 100))\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post an activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Condition to stop running the tests if the response isn't valid\r",
+									"if (pm.collectionVariables.get(\"ValidResponse\")) {\r",
+									"\r",
+									"    //Get the resononse from the body\r",
+									"    var body = pm.response.json();\r",
+									"\r",
+									"    //Check that the ID returned is a number and equal the value entered in the request  \r",
+									"    pm.test(\"Id returned a number and equal the placed value\", function () {\r",
+									"        pm.expect(body.id).to.be.a('Number');\r",
+									"        pm.expect(body.id).to.equal(pm.variables.get(\"IdPost\"))\r",
+									"    })\r",
+									"\r",
+									"    //Check that the title returned is a string and equal the value entered in the request \r",
+									"    pm.test(\"title returned a string and equal the placed value\", function () {\r",
+									"        pm.expect(body.title).to.be.a(\"string\");\r",
+									"        pm.expect(body.title).to.equal(pm.variables.get(\"Title\"));\r",
+									"    })\r",
+									"\r",
+									"    //Check that the completed returned is a boolean and equal the value entered in the request\r",
+									"    pm.test(\"completed returned a boolean and equal the placed value\", function () {\r",
+									"        pm.expect(body.completed).to.be.a('boolean');\r",
+									"        pm.expect(body.completed).to.equal(JSON.parse(pm.variables.get(\"Completed\")));\r",
+									"    })\r",
+									"\r",
+									"    //Check that the dueDate returned is a Date and equal the value entered in the request\r",
+									"    pm.test(\"dueDate returned a Date and equal the placed value\", function () {\r",
+									"        pm.expect(body.dueDate).to.include(\"T\");\r",
+									"        pm.expect(body.dueDate).to.equal(pm.variables.get(\"ISOTime\"));\r",
+									"    })\r",
+									"\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//Get the time before request\r",
+									"var today = new Date();\r",
+									"\r",
+									"//increase the current time with 10 seconds\r",
+									"today.setSeconds(today.getSeconds() + 10);\r",
+									"\r",
+									"//if the milliseconds has zero at the last we are going to add 1 because the API response removes the last zero in the time\r",
+									"if (today.getMilliseconds() % 10 == 0) {\r",
+									"    today.setMilliseconds(today.getMilliseconds() + 1);\r",
+									"}\r",
+									"\r",
+									"//Convert the time to match the time formala \r",
+									"var ISOTime = today.toISOString();\r",
+									"\r",
+									"//Place the the ISOTime in the collection variable \r",
+									"pm.collectionVariables.set(\"ISOTime\", ISOTime)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": {{IdPost}},\r\n    \"title\": \"{{Title}}\",\r\n    \"dueDate\": \"{{ISOTime}}\",\r\n    \"completed\": {{Completed}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}",
+							"host": [
+								"{{URL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get an activity",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//A function that choose an inter randomally \r",
+									"function getRandomInt(max) {\r",
+									"    return Math.floor(Math.random() * max) + 1;\r",
+									"}\r",
+									"\r",
+									"//Condition to stop running the tests if the response isn't valid \r",
+									"if (pm.collectionVariables.get(\"ValidResponse\")) {\r",
+									"\r",
+									"    //Get the ID's value entered in the request and get the resononse from the body\r",
+									"    var ID = pm.variables.get(\"Id\");\r",
+									"    var body = pm.response.json();\r",
+									"\r",
+									"    //Check that the ID returned is a number and equal the value entered in the request   \r",
+									"    pm.test(\"Id returned is a number and equals the entered value\", function () {\r",
+									"        pm.expect(body.id).to.be.a('Number');\r",
+									"        pm.expect(body.id).to.equal(ID);\r",
+									"    })\r",
+									"\r",
+									"    //Check that the title return a string\r",
+									"    pm.test(\"title returned and a string\", function () {\r",
+									"        pm.expect(body.title).to.be.a(\"string\");\r",
+									"    })\r",
+									"\r",
+									"    //Check that the complete parameter returned boolean\r",
+									"    pm.test(\"completed returned and a boolean\", function () {\r",
+									"        pm.expect(body.completed).to.be.a('boolean');\r",
+									"    })\r",
+									"\r",
+									"    //Check that the dueDate retruned contain some of time format like +00:00 and T \r",
+									"    pm.test(\"dueDate returned and a date\", function () {\r",
+									"        pm.expect(body.dueDate).to.include('+00:00');\r",
+									"        pm.expect(body.dueDate).to.include(\"T\");\r",
+									"    })\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/{{Id}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{Id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update activity",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//Get the time before request\r",
+									"var today = new Date();\r",
+									"\r",
+									"//increase the current time with 10 seconds\r",
+									"today.setSeconds(today.getSeconds() + 10);\r",
+									"\r",
+									"//if the milliseconds has zero at the last we are going to add 1 because the API response removes the last zero in the time\r",
+									"if (today.getMilliseconds() % 10 == 0) {\r",
+									"    today.setMilliseconds(today.getMilliseconds() + 1);\r",
+									"}\r",
+									"\r",
+									"//Convert the time to match the time formala \r",
+									"var ISOTime = today.toISOString();\r",
+									"\r",
+									"//Place the the ISOTime in the collection variable \r",
+									"pm.collectionVariables.set(\"ISOTime\", ISOTime)"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Condition to stop running the tests if the response isn't valid\r",
+									"if (pm.collectionVariables.get(\"ValidResponse\")) {\r",
+									"\r",
+									"    //Get the resononse from the body\r",
+									"    var body = pm.response.json();\r",
+									"\r",
+									"    //Check that the ID returned is a number and equal the value entered in the request  \r",
+									"    pm.test(\"Id returned a number and equal the placed value\", function () {\r",
+									"        pm.expect(body.id).to.be.a('Number');\r",
+									"        pm.expect(body.id).to.equal(pm.variables.get(\"IdPost\"))\r",
+									"    })\r",
+									"\r",
+									"    //Check that the title returned is a string and equal the value entered in the request \r",
+									"    pm.test(\"title returned a string and equal the placed value\", function () {\r",
+									"        pm.expect(body.title).to.be.a(\"string\");\r",
+									"        pm.expect(body.title).to.equal(pm.variables.get(\"Title\"));\r",
+									"    })\r",
+									"\r",
+									"    //Check that the completed returned is a boolean and equal the value entered in the request\r",
+									"    pm.test(\"completed returned a boolean and equal the placed value\", function () {\r",
+									"        pm.expect(body.completed).to.be.a('boolean');\r",
+									"        pm.expect(body.completed).to.equal(JSON.parse(pm.variables.get(\"Completed\")));\r",
+									"    })\r",
+									"\r",
+									"    //Check that the dueDate returned is a Date and equal the value entered in the request\r",
+									"    pm.test(\"dueDate returned a Date and equal the placed value\", function () {\r",
+									"        pm.expect(body.dueDate).to.include(\"T\");\r",
+									"        pm.expect(body.dueDate).to.equal(pm.variables.get(\"ISOTime\"));\r",
+									"    })\r",
+									"\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": {{IdPost}},\r\n    \"title\": \"{{Title}}\",\r\n    \"dueDate\": \"{{ISOTime}}\",\r\n    \"completed\": {{Completed}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/{{Id}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{Id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an activity",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/{{Id}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{Id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"//Check that the request return with response code 200 and message OK",
+					"pm.test(\"The request return successfully\", function () {",
+					"    pm.response.to.have.status(200);",
+					"    pm.response.to.have.status(\"OK\");",
+					"});",
+					"",
+					"//Beofre running the test we have to check that the response code is 200",
+					"if (pm.response.code == 200) {",
+					"",
+					"    //Setting ValidResponse with true to help other tests in running",
+					"    pm.collectionVariables.set(\"ValidResponse\", true)",
+					"",
+					"    //Check if the request isn't Delete",
+					"    if (pm.request.method.includes(\"DELETE\") != true) {",
+					"        //Check on the content type that return in the header and it's type to be JSON",
+					"        pm.test(\"Content-Type returned and JSON type with no problems\", function () {",
+					"            pm.response.to.have.header(\"Content-Type\", \"application/json; charset=utf-8; v=1.0\");",
+					"        });",
+					"    }",
+					"",
+					"    //Check if the request is Delete",
+					"    else if (pm.request.method.includes(\"DELETE\") == true) {",
+					"        //Check that the request is Delete",
+					"        pm.test(\"Deleted successfully\", function () {",
+					"        });",
+					"    }",
+					"}",
+					"",
+					"//Set ValidResponse false if the response code isn't 200",
+					"else {",
+					"    pm.collectionVariables.set(\"ValidResponse\", false)",
+					"}",
+					"",
+					"",
+					"",
+					"",
+					"",
+					"",
+					"",
+					"",
+					"",
+					"",
+					"",
+					"",
+					"",
+					"",
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "IdPost",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "Title",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ISOTime",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "Completed",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ValidResponse",
+			"value": ""
+		}
+	]
+}
