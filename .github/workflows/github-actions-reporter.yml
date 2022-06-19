@@ -28,7 +28,7 @@ jobs:
         run: mkdir -p HTMLReports
         
    # Run the POSTMAN collection
-      - name: Run the Tests
+      - name: Run the Tests and report it with Newman
         run: newman run "FakeRESTApi.postman_collection.json" -e "FakeRESTApi.postman_environment.json" --iteration-data "Data.csv" -r htmlextra --reporter-htmlextra-export HTMLReports/htmlreport.html
 
     # Upload the contents of Test Results directory to workspace
