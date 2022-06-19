@@ -13,4 +13,4 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run API Tests
-        run: newman run "FakeRESTApi.postman_collection.json" -e "FakeRESTApi.postman_environment.json" --iteration-data "Data.csv"
+        run: newman run "FakeRESTApi.postman_collection.json" -e "FakeRESTApi.postman_environment.json" --iteration-data "Data.csv" -r htmlextra
