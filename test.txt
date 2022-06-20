@@ -1,5 +1,13 @@
 just a test for git commands
 
 
+<<<<<<< Updated upstream
 just a test for stash
+=======
+
+dslksjsdk;jf
+
+dsfslkdfjs
+
+>>>>>>> Stashed changes
 
